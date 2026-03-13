@@ -1,0 +1,5 @@
+{
+  "name": "Hệ thống Quản lý Yêu cầu Sửa chữa",
+  "description": "Một ứng dụng web giúp các phòng ban trong trường học gửi và theo dõi các yêu cầu sửa chữa, bảo trì cơ sở vật chất. Giúp quá trình xử lý sự cố trở nên minh bạch và hiệu quả hơn.",
+  "requestFramePermissions": []
+}

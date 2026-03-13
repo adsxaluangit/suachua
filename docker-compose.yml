@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: suachua_db
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-123456}
+      POSTGRES_DB: ${DB_NAME:-suachua}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - suachua_network
+
+  strapi:
+    build:
+      context: ./cms
+      dockerfile: Dockerfile
+    container_name: suachua_strapi
+    environment:
+      - DATABASE_CLIENT=postgres
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=${DB_NAME:-suachua_strapi}
+      - DATABASE_USERNAME=${DB_USER:-postgres}
+      - DATABASE_PASSWORD=${DB_PASSWORD:-123456}
+      - JWT_SECRET=aSecretKey123
+      - ADMIN_JWT_SECRET=anotherSecretKey123
+      - APP_KEYS=key1,key2,key3
+      - API_TOKEN_SALT=aSalt123
+      - TRANSFER_TOKEN_SALT=anotherSalt123
+      - HOST=0.0.0.0
+      - PORT=1337
+      - NODE_ENV=development
+    command: npm run develop
+    ports:
+      - "1338:1337"
+    depends_on:
+      - db
+    restart: unless-stopped
+    volumes:
+      - ./cms:/app
+      - /app/node_modules
+    networks:
+      - suachua_network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: suachua_frontend
+    ports:
+      - "83:80"  # Expose container's port 80 to host's port 83
+    depends_on:
+      - strapi
+    restart: unless-stopped
+    networks:
+      - suachua_network
+
+networks:
+  suachua_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

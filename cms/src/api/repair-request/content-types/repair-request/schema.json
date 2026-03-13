@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "repair_requests",
+  "info": {
+    "singularName": "repair-request",
+    "pluralName": "repair-requests",
+    "displayName": "Repair Request",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": { "type": "string" },
+    "description": { "type": "text" },
+    "status": { "type": "string", "default": "Mới" },
+    "priority": { "type": "string", "default": "Trung bình" },
+    "submittedDate": { "type": "datetime" },
+    "imageUrl": { "type": "string" },
+    "department": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::department.department"
+    },
+    "room": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::room.room"
+    },
+    "requester": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    }
+  }
+}
