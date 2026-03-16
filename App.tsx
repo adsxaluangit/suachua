@@ -230,9 +230,21 @@ function App() {
       const normalize = (s: any) => String(s || '').normalize('NFC').trim().toLowerCase();
       const dept = departments.find(d => normalize(d.name) === normalize(u.department));
       // Strapi v5 users-permissions plugin often still requires numeric ID for relations
-      const deptId = (dept as any)?.strapiId || dept?.id || null;
-      console.log('🔗 Creating user with dept:', { deptName: u.department, deptFound: !!dept, deptId });
-      const payload = { ...u, department: deptId };
+      const deptId = dept ? (dept.strapiId || dept.id) : null;
+      
+      console.log('🔗 Creating user debug:', { 
+        inputDept: u.department, 
+        foundDept: dept?.name, 
+        resolvedId: deptId,
+        isIdNumber: typeof deptId === 'number'
+      });
+
+      if (!deptId) {
+        alert(`Không tìm thấy phòng ban: ${u.department}. Vui lòng thử tải lại trang (F5).`);
+        return;
+      }
+
+      const payload = { ...u, department: Number(deptId) || deptId };
       await userService.create(payload);
       loadData();
       alert("Tạo tài khoản thành công!");
