@@ -3,6 +3,8 @@ import { RepairRequest, User, Building, Room } from '../types';
 
 // Link to Strapi Backend: Use VITE_API_URL if provided, else default to /api for Nginx proxy
 const API_URL = import.meta.env.VITE_API_URL || '';
+const VERSION = "1.0.5";
+console.log(`🚀 Suachua API Service v${VERSION} initialized`);
 const API_BASE = API_URL.endsWith('/api') ? API_URL : `${API_URL}/api`.replace(/\/+$/, '') || '/api';
 
 const api = axios.create({
