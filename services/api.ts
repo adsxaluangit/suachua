@@ -218,8 +218,11 @@ export const userService = {
             
             if (strapiError?.details?.errors) {
                 const details = strapiError.details.errors.map((e: any) => `${e.path?.join('.') || 'unknown'}: ${e.message}`).join(', ');
-                throw new Error(`${strapiError.message}: ${details}`);
+                const fullMsg = `${strapiError.message}: ${details}`;
+                alert(`❌ LỖI TẠO USER: ${fullMsg}`);
+                throw new Error(fullMsg);
             }
+            alert(`❌ LỖI TẠO USER: ${strapiError?.message || err.message}`);
             throw new Error(strapiError?.message || err.message);
         });
     },
