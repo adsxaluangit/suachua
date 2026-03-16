@@ -229,8 +229,8 @@ function App() {
     try {
       const normalize = (s: any) => String(s || '').normalize('NFC').trim().toLowerCase();
       const dept = departments.find(d => normalize(d.name) === normalize(u.department));
-      // Strapi v5 needs documentId for relations
-      const deptId = (dept as any)?.documentId || dept?.id || null;
+      // Strapi v5 users-permissions plugin often still requires numeric ID for relations
+      const deptId = (dept as any)?.strapiId || dept?.id || null;
       console.log('🔗 Creating user with dept:', { deptName: u.department, deptFound: !!dept, deptId });
       const payload = { ...u, department: deptId };
       await userService.create(payload);
@@ -245,7 +245,7 @@ function App() {
     try {
       const normalize = (s: any) => String(s || '').normalize('NFC').trim().toLowerCase();
       const dept = departments.find(d => normalize(d.name) === normalize(u.department));
-      const deptId = (dept as any)?.documentId || dept?.id || null;
+      const deptId = (dept as any)?.strapiId || dept?.id || null;
       const payload = {
         name: u.name,
         email: u.email,

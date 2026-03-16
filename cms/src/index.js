@@ -123,21 +123,29 @@ module.exports = {
 
       // B. Seed Dashboard User (for /admin)
       try {
+        const adminEmail = 'admin2@school.edu.vn'; // Using a fresh email to bypass 429 rate limit bucket
+        const adminPass = 'admin123';
         const superAdminRole = await strapi.service('admin::role').getSuperAdmin();
+        
         if (superAdminRole) {
+           const users = await strapi.query('admin::user').findMany({ where: { email: adminEmail } });
+           for (const u of users) {
+             await strapi.query('admin::user').delete({ where: { id: u.id } });
+           }
+
            const dashboardUser = await strapi.service('admin::user').create({
-             email: 'admin@school.edu.vn',
+             email: adminEmail,
              firstname: 'Admin',
              lastname: 'User',
-             password: 'admin123',
+             password: adminPass,
              registrationToken: null,
              isActive: true,
              roles: [superAdminRole.id],
            });
-           console.log('✅ Dashboard User (admin::user) seeded:', dashboardUser.email);
+           console.log('✅ Dashboard User (admin2) seeded:', dashboardUser.email);
         }
       } catch (adminErr) {
-        console.warn('⚠️ Could not seed Dashboard User (might already exist):', adminErr.message);
+        console.warn('⚠️ Could not seed Dashboard User:', adminErr.message);
       }
 
     } catch (err) {

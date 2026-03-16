@@ -190,16 +190,33 @@ export const userService = {
 
         const payload = {
             ...cleanRest,
-            username: name || rest.email,
+            // Strapi 5 username check: No spaces, unique. 
+            // We'll use email as username if available, or sanitize name.
+            username: (rest.email || name || `user_${Date.now()}`).toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_@.]/g, ''),
+            email: rest.email,
+            password: rest.password || 'user123',
             user_role: role || 'USER',
-            role: 1, // Require authenticated role ID in Strapi v5
-            confirmed: true
+            role: 1, // ID of 'Authenticated' role
+            confirmed: true,
+            provider: 'local'
         };
+
+        console.log("👤 ATTEMPTING TO CREATE USER:", payload);
+
         return api.post<any>('/users', payload).then(res => ({
             ...res.data,
             name: res.data.username,
             role: res.data.user_role
-        }));
+        })).catch(err => {
+            const strapiError = err.response?.data?.error;
+            console.error("❌ USER CREATE ERROR DETAILS:", strapiError || err.message);
+            // Throw a more readable error if possible
+            if (strapiError?.details?.errors) {
+                const details = strapiError.details.errors.map((e: any) => `${e.path.join('.')}: ${e.message}`).join(', ');
+                throw new Error(`${strapiError.message} (${details})`);
+            }
+            throw err;
+        });
     },
     update: (id: string, data: any) => {
         const { id: dummy, documentId, role, name, ...rest } = data;

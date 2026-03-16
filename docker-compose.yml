@@ -7,9 +7,9 @@ services:
     environment:
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-123456}
-      POSTGRES_DB: ${DB_NAME:-suachua}
+      POSTGRES_DB: strapi_db_v1
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - strapi_postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     networks:
       - suachua_network
@@ -23,7 +23,7 @@ services:
       - DATABASE_CLIENT=postgres
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
-      - DATABASE_NAME=${DB_NAME:-suachua_strapi}
+      - DATABASE_NAME=strapi_db_v1
       - DATABASE_USERNAME=${DB_USER:-postgres}
       - DATABASE_PASSWORD=${DB_PASSWORD:-123456}
       - JWT_SECRET=aSecretKey123
@@ -34,6 +34,8 @@ services:
       - HOST=0.0.0.0
       - PORT=1337
       - NODE_ENV=development
+      - STRAPI_LOG_LEVEL=debug
+      - STRAPI_PUBLIC_URL=http://localhost:1338
     command: npm run develop
     ports:
       - "1338:1337"
@@ -64,4 +66,4 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:
+  strapi_postgres_data:
