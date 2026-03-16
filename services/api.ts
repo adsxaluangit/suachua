@@ -167,6 +167,14 @@ export const roomService = {
     delete: (id: string) => api.delete(`/rooms/${id}`).then(res => res.data),
 };
 
+const removeVietnameseAccents = (str: string) => {
+    return str.normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd').replace(/Đ/g, 'D')
+        .replace(/[^a-zA-Z0-9\s]/g, '')
+        .trim();
+};
+
 export const userService = {
     getAll: () => api.get<any>('/users?populate=department').then(res => {
         const users = Array.isArray(res.data) ? res.data : (res.data.results || []);
@@ -188,11 +196,15 @@ export const userService = {
             if (!forbidden.includes(key)) cleanRest[key] = rest[key];
         });
 
+        const rawName = name || rest.email?.split('@')[0] || `user_${Date.now()}`;
+        const sanitizedUsername = removeVietnameseAccents(rawName)
+            .toLowerCase()
+            .replace(/\s+/g, '_')
+            .replace(/[^a-z0-9_]/g, '');
+
         const payload = {
             ...cleanRest,
-            // Strapi 5 username check: No spaces, unique. 
-            // We'll use email as username if available, or sanitize name.
-            username: (rest.email || name || `user_${Date.now()}`).toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_@.]/g, ''),
+            username: sanitizedUsername.length >= 3 ? sanitizedUsername : `${sanitizedUsername}_${Math.floor(100 + Math.random() * 900)}`,
             email: rest.email,
             password: rest.password || 'user123',
             user_role: role || 'USER',
