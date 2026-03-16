@@ -209,13 +209,18 @@ export const userService = {
             role: res.data.user_role
         })).catch(err => {
             const strapiError = err.response?.data?.error;
-            console.error("❌ USER CREATE ERROR DETAILS:", strapiError || err.message);
-            // Throw a more readable error if possible
+            console.error("❌ USER CREATE ERROR:", {
+                status: err.response?.status,
+                message: strapiError?.message || err.message,
+                details: strapiError?.details,
+                payload: payload
+            });
+            
             if (strapiError?.details?.errors) {
-                const details = strapiError.details.errors.map((e: any) => `${e.path.join('.')}: ${e.message}`).join(', ');
-                throw new Error(`${strapiError.message} (${details})`);
+                const details = strapiError.details.errors.map((e: any) => `${e.path?.join('.') || 'unknown'}: ${e.message}`).join(', ');
+                throw new Error(`${strapiError.message}: ${details}`);
             }
-            throw err;
+            throw new Error(strapiError?.message || err.message);
         });
     },
     update: (id: string, data: any) => {

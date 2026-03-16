@@ -1,7 +1,5 @@
 'use strict';
 
-const bcrypt = require('bcryptjs');
-
 module.exports = {
   register(/*{ strapi }*/) {},
   
@@ -96,56 +94,49 @@ module.exports = {
       });
       console.log('✅ Room seeded: A101');
 
-      // Cleanup existing users
-      const cleanupEmails = ['admin@school.edu.vn', 'admin@example.com'];
+      // Cleanup existing users to avoid collisions
+      const cleanupEmails = ['admin@suachua.vn', 'admin2@school.edu.vn', 'admin@school.edu.vn'];
       for (const email of cleanupEmails) {
         await strapi.query('plugin::users-permissions.user').delete({ where: { email } });
         await strapi.query('admin::user').delete({ where: { email } });
       }
-      await strapi.query('plugin::users-permissions.user').delete({ where: { username: 'admin' } });
 
       // Search for Authenticated Role
       const authRole = await strapi.query('plugin::users-permissions.role').findOne({ where: { type: 'authenticated' } });
-      console.log('Authenticated Role ID:', authRole?.id);
 
       // A. Seed API User (for Frontend)
+      const userEmail = 'admin@suachua.vn';
+      const userPass = 'admin123';
+      
       const apiUser = await strapi.plugin('users-permissions').service('user').add({
         username: 'admin',
-        email: 'admin@school.edu.vn',
-        password: 'admin123',
+        email: userEmail,
+        password: userPass,
         confirmed: true,
         provider: 'local',
         role: authRole.id,
         user_role: 'ADMIN',
         department: dept.id
       });
-      console.log('✅ API User (users-permissions) seeded:', apiUser.username, '(ID:', apiUser.id, ')');
+      console.log(`✅ API User (up_user) seeded: ${apiUser.email} (ID: ${apiUser.id})`);
 
       // B. Seed Dashboard User (for /admin)
       try {
-        const adminEmail = 'admin2@school.edu.vn'; // Using a fresh email to bypass 429 rate limit bucket
-        const adminPass = 'admin123';
         const superAdminRole = await strapi.service('admin::role').getSuperAdmin();
-        
         if (superAdminRole) {
-           const users = await strapi.query('admin::user').findMany({ where: { email: adminEmail } });
-           for (const u of users) {
-             await strapi.query('admin::user').delete({ where: { id: u.id } });
-           }
-
            const dashboardUser = await strapi.service('admin::user').create({
-             email: adminEmail,
+             email: userEmail,
              firstname: 'Admin',
              lastname: 'User',
-             password: adminPass,
+             password: userPass,
              registrationToken: null,
              isActive: true,
              roles: [superAdminRole.id],
            });
-           console.log('✅ Dashboard User (admin2) seeded:', dashboardUser.email);
+           console.log(`✅ Dashboard User (admin_user) seeded: ${dashboardUser.email} (ID: ${dashboardUser.id})`);
         }
       } catch (adminErr) {
-        console.warn('⚠️ Could not seed Dashboard User:', adminErr.message);
+        console.error('❌ Error seeding Dashboard User:', adminErr.message);
       }
 
     } catch (err) {

@@ -35,7 +35,6 @@ services:
       - PORT=1337
       - NODE_ENV=development
       - STRAPI_LOG_LEVEL=debug
-      - STRAPI_PUBLIC_URL=http://localhost:1338
     command: npm run develop
     ports:
       - "1338:1337"
