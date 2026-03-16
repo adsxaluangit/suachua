@@ -10,7 +10,7 @@ module.exports = [
   {
     name: 'strapi::cors',
     config: {
-      origin: ['http://suachua.mic1.edu.vn:83', 'http://localhost:83', 'http://localhost:1338', '*'],
+      origin: ['http://suachua.mic1.edu.vn:83', 'http://localhost:83', 'http://localhost:1339', '*'],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
       headers: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
       keepHeaderOnError: true,
