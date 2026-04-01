@@ -90,7 +90,7 @@ module.exports = {
 
       // Seed Room
       const room = await strapi.query('api::room.room').create({
-        data: { name: 'Phòng 101', code: 'A101', building: bld.id }
+        data: { roomNumber: 'A101', type: 'Văn phòng', floor: 1, building: bld.id }
       });
       console.log('✅ Room seeded: A101');
 
