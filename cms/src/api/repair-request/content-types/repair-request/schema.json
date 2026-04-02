@@ -4,7 +4,7 @@
   "info": {
     "singularName": "repair-request",
     "pluralName": "repair-requests",
-    "displayName": "Repair Request",
+    "displayName": "Yêu cầu sửa chữa",
     "description": ""
   },
   "options": {

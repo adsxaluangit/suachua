@@ -434,7 +434,7 @@ export interface ApiBuildingBuilding extends Struct.CollectionTypeSchema {
   collectionName: 'buildings';
   info: {
     description: '';
-    displayName: 'Building';
+    displayName: 'T\u00F2a nh\u00E0';
     pluralName: 'buildings';
     singularName: 'building';
   };
@@ -465,7 +465,7 @@ export interface ApiBuildingBuilding extends Struct.CollectionTypeSchema {
 export interface ApiDepartmentDepartment extends Struct.CollectionTypeSchema {
   collectionName: 'departments';
   info: {
-    displayName: 'Department';
+    displayName: 'Ph\u00F2ng ban';
     pluralName: 'departments';
     singularName: 'department';
   };
@@ -497,7 +497,7 @@ export interface ApiRepairRequestRepairRequest
   collectionName: 'repair_requests';
   info: {
     description: '';
-    displayName: 'Repair Request';
+    displayName: 'Y\u00EAu c\u1EA7u s\u1EEDa ch\u1EEFa';
     pluralName: 'repair-requests';
     singularName: 'repair-request';
   };
@@ -541,7 +541,7 @@ export interface ApiRoomRoom extends Struct.CollectionTypeSchema {
   collectionName: 'rooms';
   info: {
     description: '';
-    displayName: 'Room';
+    displayName: 'Ph\u00F2ng';
     pluralName: 'rooms';
     singularName: 'room';
   };
