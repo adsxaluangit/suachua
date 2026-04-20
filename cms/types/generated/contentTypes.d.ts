@@ -513,7 +513,7 @@ export interface ApiRepairRequestRepairRequest
       'api::department.department'
     >;
     description: Schema.Attribute.Text;
-    imageUrl: Schema.Attribute.String;
+    imageUrl: Schema.Attribute.Text;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

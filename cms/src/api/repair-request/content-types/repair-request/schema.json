@@ -17,7 +17,7 @@
     "status": { "type": "string", "default": "Mới" },
     "priority": { "type": "string", "default": "Trung bình" },
     "submittedDate": { "type": "datetime" },
-    "imageUrl": { "type": "string" },
+    "imageUrl": { "type": "text" },
     "department": {
       "type": "relation",
       "relation": "manyToOne",

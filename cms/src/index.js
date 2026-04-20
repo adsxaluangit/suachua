@@ -67,80 +67,50 @@ module.exports = {
       console.error('❌ Error during permission bootstrap:', err);
     }
 
-    // 2. Cleanup and Seed Data
+    // 2. Ensuring Admin User and Permissions
     try {
-      console.log('--- Seeding Data ---');
+      console.log('--- Checking for Admin User ---');
       
-      // Cleanup existing data to start fresh
-      await strapi.query('api::building.building').deleteMany();
-      await strapi.query('api::room.room').deleteMany();
-      await strapi.query('api::department.department').deleteMany();
+      const userEmail = 'adsxaluan@gmail.com';
+      const userPass = '123456x@X9';
 
-      // Seed Department
-      const dept = await strapi.query('api::department.department').create({
-        data: { name: 'Phòng Tổ chức - Hành chính', code: 'TCHC' }
-      });
-      console.log('✅ Department seeded:', dept.name);
-
-      // Seed Building
-      const bld = await strapi.query('api::building.building').create({
-        data: { name: 'Nhà A', code: 'A', description: 'Tòa nhà văn phòng chính' }
-      });
-      console.log('✅ Building seeded:', bld.name);
-
-      // Seed Room
-      const room = await strapi.query('api::room.room').create({
-        data: { roomNumber: 'A101', type: 'Văn phòng', floor: 1, building: bld.id }
-      });
-      console.log('✅ Room seeded: A101');
-
-      // Cleanup existing users to avoid collisions
-      const cleanupEmails = ['admin@suachua.vn', 'admin2@school.edu.vn', 'admin@school.edu.vn'];
-      for (const email of cleanupEmails) {
-        await strapi.query('plugin::users-permissions.user').delete({ where: { email } });
-        await strapi.query('admin::user').delete({ where: { email } });
-      }
-
-      // Search for Authenticated Role
-      const authRole = await strapi.query('plugin::users-permissions.role').findOne({ where: { type: 'authenticated' } });
-
-      // A. Seed API User (for Frontend)
-      const userEmail = 'admin@suachua.vn';
-      const userPass = 'admin123';
+      // Check if Admin User exists in admin panel
+      const existingAdmin = await strapi.query('admin::user').findOne({ where: { email: userEmail } });
       
-      const apiUser = await strapi.plugin('users-permissions').service('user').add({
-        username: 'admin',
-        email: userEmail,
-        password: userPass,
-        confirmed: true,
-        provider: 'local',
-        role: authRole.id,
-        user_role: 'ADMIN',
-        department: dept.id
-      });
-      console.log(`✅ API User (up_user) seeded: ${apiUser.email} (ID: ${apiUser.id})`);
-
-      // B. Seed Dashboard User (for /admin)
-      try {
+      if (!existingAdmin) {
+        console.log('Creating missing admin user...');
         const superAdminRole = await strapi.service('admin::role').getSuperAdmin();
         if (superAdminRole) {
-           const dashboardUser = await strapi.service('admin::user').create({
-             email: userEmail,
-             firstname: 'Admin',
-             lastname: 'User',
-             password: userPass,
-             registrationToken: null,
-             isActive: true,
-             roles: [superAdminRole.id],
-           });
-           console.log(`✅ Dashboard User (admin_user) seeded: ${dashboardUser.email} (ID: ${dashboardUser.id})`);
+          await strapi.service('admin::user').create({
+            email: userEmail,
+            firstname: 'Admin',
+            lastname: 'User',
+            password: userPass,
+            registrationToken: null,
+            isActive: true,
+            roles: [superAdminRole.id],
+          });
+          console.log(`✅ Dashboard User created: ${userEmail}`);
         }
-      } catch (adminErr) {
-        console.error('❌ Error seeding Dashboard User:', adminErr.message);
+      }
+
+      // Check if API user exists
+      const existingApiUser = await strapi.query('plugin::users-permissions.user').findOne({ where: { email: userEmail } });
+      if (!existingApiUser) {
+        const authRole = await strapi.query('plugin::users-permissions.role').findOne({ where: { type: 'authenticated' } });
+        await strapi.plugin('users-permissions').service('user').add({
+          username: 'admin',
+          email: userEmail,
+          password: userPass,
+          confirmed: true,
+          provider: 'local',
+          role: authRole.id,
+        });
+        console.log(`✅ API User created: ${userEmail}`);
       }
 
     } catch (err) {
-      console.error('❌ Error during data seeding:', err);
+      console.error('❌ Error during bootstrap check:', err.message);
     }
   },
 };

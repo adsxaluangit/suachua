@@ -7,6 +7,7 @@ export default defineConfig(({ mode }) => {
   return {
     server: {
       port: 5180,
+      allowedHosts: ['suachua.mic1.edu.vn'],
       proxy: {
         '/api': {
           target: 'http://localhost:5000',
