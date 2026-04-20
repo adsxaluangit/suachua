@@ -32,13 +32,13 @@ services:
       - API_TOKEN_SALT=aSalt123
       - TRANSFER_TOKEN_SALT=anotherSalt123
       - HOST=0.0.0.0
-      - PORT=1337
+      - PORT=1339
       - NODE_ENV=development
       - STRAPI_LOG_LEVEL=debug
       - STRAPI_PUBLIC_URL=http://suachua.mic1.edu.vn:83
     command: npm run develop
     ports:
-      - "1339:1337"
+      - "1339:1339"
     depends_on:
       - db
     restart: unless-stopped
